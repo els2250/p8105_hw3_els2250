@@ -1,0 +1,15 @@
+---
+title: "Homework 3"
+author: Emma Sexton <br>
+date: "Due: 15 October 2022"
+output: github_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
+```
+
+```{r}
+library(tidyverse)
+```
+
