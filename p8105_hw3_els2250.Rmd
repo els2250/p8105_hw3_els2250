@@ -13,3 +13,32 @@ knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 library(tidyverse)
 ```
 
+## Problem 1
+
+The goal of this problem is to explore the `instacart` dataset. First, we will need to load the dataset: 
+
+```{r}
+library(p8105.datasets)
+data("instacart")
+```
+
+#### Summary of the Dataset
+The `instacart` dataset is an extensive dataframe that represents product orders from the Instacart grocery service. The dataset contains `r nrow(instacart)` observations (rows), where each observation is a product from an order, and `r ncol(instacart)` variables. Among the variables, there are various identifiers, such as order, product, user, product, and department identifiers (`order_id`, `product_id`, `user_id`, `product_id`, and `department_id` respectively). There are also variables that detail product and order information, such as:
+
+* `product_name` which states the name of the product
+* `add_to_cart_order` which details the order each product was added to the cart
+* `reordered` which identifies if the user has ordered the product in the past using binary coding (0 = no, 1 = yes)
+* `order_number` which signifies the order sequence number for the user
+* `order_dow`, `order_hour_of_day`, and `days_since_prior_order` which capture the day of the week on which the order was placed, the time the order was placed (hour of the day), and the days since the last order, respectively.
+
+
+##### *Q1.1 How many aisles are there, and which aisles are the most items ordered from?*
+
+
+##### *Q1.2 Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.*
+
+
+##### *Q1.3 Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.*
+
+
+##### *Q1.4 Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).*
