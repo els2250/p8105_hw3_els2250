@@ -70,7 +70,37 @@ instacart %>%
 
 #### *Q1.3 Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.*
 
-
+```{r}
+instacart %>% 
+  filter(aisle == c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
+  group_by(aisle, product_name) %>% 
+  summarize(
+    n_obs = n()
+  ) %>% 
+  mutate(
+    product_rank = min_rank(product_name)
+  ) %>% 
+  filter(product_rank < 4) %>% 
+  arrange(aisle, product_rank) %>% 
+  knitr::kable()
+```
 
 
 #### *Q1.4 Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).*
+
+```{r}
+instacart %>% 
+  filter(product_name == c("Pink Lady Apples", "Coffee Ice Cream")) %>% 
+  group_by(product_name, order_dow) %>% 
+  summarize(
+    mean_hour = mean(order_hour_of_day)
+  ) %>% 
+  pivot_wider(., 
+    names_from = order_dow,
+    values_from = mean_hour
+  ) %>% 
+  knitr::kable(digits = 0)
+```
+
+This table demonstrates the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. Days of the week range from 0 to 6 and the hour of the day is in military time. 
+
