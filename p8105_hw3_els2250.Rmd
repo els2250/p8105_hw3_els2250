@@ -104,3 +104,25 @@ instacart %>%
 
 This table demonstrates the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. Days of the week range from 0 to 6 and the hour of the day is in military time. 
 
+
+## Problem 2
+
+The goal of this problem is to load, tidy, and wrangle five weeks of accelerometer data collected from a 63 year-old male with BMI 25. First, we will load the dataset:
+
+```{r}
+accelero_df <- 
+  read_csv('data/accel_data.csv')
+```
+
+Next, we will tidy the dataset:
+
+```{r}
+accelero_df %>% 
+  pivot_longer(
+    cols = activity.1:activity.1440,
+    names_to = "minute",
+    values_to = "activity_counts",
+    names_prefix = "activity."
+  )
+```
+
