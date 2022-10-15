@@ -113,18 +113,31 @@ The goal of this problem is to load, tidy, and wrangle five weeks of acceleromet
 
 ```{r}
 accelero_df <- 
-  read_csv('data/accel_data.csv')
+  read_csv('data/accel_data.csv') %>% 
+  janitor::clean_names()
 ```
 
-Next, we will tidy the dataset:
+Next, we will tidy the dataset and create a weekday vs. weekend  variable.  
 
 ```{r}
-accelero_df %>% 
+accelero_df <- accelero_df %>% 
+  mutate(weeekend_v_weekday = ifelse(day == "Saturday" | day == "Sunday", "weekend", "weekday")) %>% 
   pivot_longer(
-    cols = activity.1:activity.1440,
+    cols = activity_1:activity_1440,
     names_to = "minute",
     values_to = "activity_counts",
     names_prefix = "activity."
   )
 ```
+
+####Summary of Dataset: 
+There are `r nrow(accelero_df)` observations and `r ncol(accelero_df)` variables in the `instacart` dataset. One observation represents one minute of activity for each day of the week over five weeks. The variables include: 
+
+* `week` representing which week data was collected from (range: `r min(accelero_df$week)`-`r max(accelero_df$week)`)
+* `day_id` representing the number of the day out of the five weeks of data collection (range: `r min(accelero_df$day_id)`-`r max(accelero_df$day_id)`)
+* `day` representing the day of the week
+* `weekend_v_weekday` describing whether the `day` recorded is the weekend or the weekday
+* `minute` depicting which the minute of the day the observation is representing (range: 1-1440)
+* `activity_counts` which represents the activity count calculated by the accelerometer (range: `r min(accelero_df$activity_counts)`-`r max(accelero_df$activity_counts)`).
+
 
