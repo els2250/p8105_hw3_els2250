@@ -11,6 +11,8 @@ knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 
 ```{r}
 library(tidyverse)
+library(ggridges)
+library(patchwork)
 ```
 
 ## Problem 1
@@ -20,6 +22,10 @@ The goal of this problem is to explore the `instacart` dataset. First, we will n
 ```{r}
 library(p8105.datasets)
 data("instacart")
+
+instacart <- 
+  instacart %>% 
+  as_tibble(instacart)
 ```
 
 #### Summary of the Dataset
@@ -39,7 +45,6 @@ The `instacart` dataset is an extensive dataframe that represents product orders
 
 ```{r}
 instacart %>% 
-  group_by(aisle) %>% 
   count(aisle) %>% 
   arrange(-n)
 ```
@@ -51,7 +56,6 @@ There are 134 aisles. The aisles that have the most items ordered from are `fres
 
 ```{r}
 instacart %>% 
-  group_by(aisle) %>% 
   count(aisle) %>% 
   filter(n > 10000) %>% 
   mutate(aisle = fct_reorder(aisle, n, .desc = TRUE)) %>% 
@@ -64,7 +68,7 @@ instacart %>%
   ) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
-    axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1))
+    axis.text.x = element_text(angle = 60, hjust = 1))
 ```
 
 
@@ -77,11 +81,9 @@ instacart %>%
   summarize(
     n_obs = n()
   ) %>% 
-  mutate(
-    product_rank = min_rank(product_name)
-  ) %>% 
+  mutate(product_rank = min_rank(desc(n_obs))) %>% 
   filter(product_rank < 4) %>% 
-  arrange(aisle, product_rank) %>% 
+  arrange(desc(n_obs)) %>% 
   knitr::kable()
 ```
 
@@ -90,7 +92,7 @@ instacart %>%
 
 ```{r}
 instacart %>% 
-  filter(product_name == c("Pink Lady Apples", "Coffee Ice Cream")) %>% 
+  filter(product_name %in% c("Pink Lady Apples", "Coffee Ice Cream")) %>% 
   group_by(product_name, order_dow) %>% 
   summarize(
     mean_hour = mean(order_hour_of_day)
@@ -99,10 +101,10 @@ instacart %>%
     names_from = order_dow,
     values_from = mean_hour
   ) %>% 
-  knitr::kable(digits = 0)
+  knitr::kable(digits = 2)
 ```
 
-This table demonstrates the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. Days of the week range from 0 to 6 and the hour of the day is in military time. 
+This table demonstrates the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. Days of the week range from 0 to 6 and the hour of the day is based on a 24h clock. 
 
 
 ## Problem 2
