@@ -13,7 +13,7 @@ knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 library(tidyverse)
 library(ggridges)
 library(patchwork)
-library(sjmisc)
+
 ```
 
 ## Problem 1
@@ -213,7 +213,7 @@ data("ny_noaa")
 #### Post-Data Cleaning:
 
 ```{r}
-ny_noaa <- ny_noaa %>% 
+ny_noaa_df <- ny_noaa %>% 
   janitor::clean_names() %>% 
   separate(col = date, into = c('year', 'month', 'day'), sep = '-') %>% 
   mutate(month = recode(month,
@@ -230,18 +230,31 @@ ny_noaa <- ny_noaa %>%
                         '11' = 'November',
                         '12' = 'December'),
          prcp = prcp*10,
-         tmax = as.numeric(tmax),
-         tmin = as.numeric(tmin))
+         tmax = as.numeric(tmax)*10,
+         tmin = as.numeric(tmin)*10)
 ```
 
 #### *What are the most commonly observed values for snowfall? Why?*
 
 ```{r}
-ny_noaa %>% 
+ny_noaa_df %>% 
   group_by(snow) %>% 
-  summarise(snowfall_n_obs = n()) %>% 
-  arrange(desc(snowfall_n_obs))
+  summarize(snow_obs = n()) %>% 
+  arrange(desc(snow_obs))
 ```
 
 The most commonly observed values for snowfall are `0` and `NA`. **NEED TO SAY WHY**
+
+
+#### *Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?*
+
+```{r}
+ny_noaa_df %>% 
+  group_by(id, year, month) %>% 
+  filter(month == "January" | month == "July") %>% 
+  summarize(tmax_mean = mean(tmax, na.rm = TRUE)) %>% 
+  ggplot(aes(x = year, y = tmax_mean, group = id)) +
+  geom_line() +
+  facet_grid(. ~ month)
+```
 
