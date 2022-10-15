@@ -143,7 +143,7 @@ There are `r nrow(accelero_df)` observations and `r ncol(accelero_df)` variables
 * `activity_counts`: a numerical variable representing the activity count calculated by the accelerometer (range: `r min(accelero_df$activity_counts)`-`r max(accelero_df$activity_counts)`).
 
 
-#### Creating a table inspecting total activity over the day:
+#### Creating a table inspecting total activity over the day of the week:
 
 Next, we will calculate the total activity (`total_activity`) each day and create a table to view any trends.  
 
@@ -165,7 +165,7 @@ accelero_df %>%
 Trends: irregularities - returns 1440 for saturday and sunday (participant potentially didn't wear accelerometer) >> do we want this to be human-centered??? 
 
 
-#### Creating a plot to inspect activity over the course of the day: 
+#### Creating a plot to inspect activity over the course of the day of the week: 
 Next, we'll create a plot to demonstrate
 
 ```{r}
@@ -175,7 +175,7 @@ accelero_plot <- accelero_df %>%
   theme_minimal() +
   labs(
     y = "Activity Count",
-    x = "Minute",
+    x = "Minute of the Day",
     title = "Activity counts per minute in 24 hours over 5 weeks"
   ) + 
   theme(plot.title = element_text(hjust = 0.5)) +
@@ -190,5 +190,4 @@ ggsave("results/accelerometer_counts_per_minute.pdf", accelero_plot, width = 8, 
 ```
 
 Trends: most activity between minute 500-750 on Sundays; most activity between around minute 1250 during weekdays and on Saturday. Activity mostly ranges between 0 to 2500; peak around 1000 minutes on Saturdays
-
 
