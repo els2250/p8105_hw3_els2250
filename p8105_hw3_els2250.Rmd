@@ -234,3 +234,14 @@ ny_noaa <- ny_noaa %>%
          tmin = as.numeric(tmin))
 ```
 
+#### *What are the most commonly observed values for snowfall? Why?*
+
+```{r}
+ny_noaa %>% 
+  group_by(snow) %>% 
+  summarise(snowfall_n_obs = n()) %>% 
+  arrange(desc(snowfall_n_obs))
+```
+
+The most commonly observed values for snowfall are `0` and `NA`. **NEED TO SAY WHY**
+
