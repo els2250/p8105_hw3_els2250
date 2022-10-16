@@ -165,7 +165,7 @@ accelero_df %>%
   knitr::kable(digits = 2)
 ```
 
-Reviewing the above table, there are a few noticeable trends/irregularities. First, Mondays appear to have the greatest activity counts each week. Second, the activity counts during the weekend appear to be lower compared to the other days of the week. Furthermore, the activity count for Saturday for week 4 and 5 is 1440, which is equivalent to the participant having an activity count of 1 for every minute of the day. This suggests that the participant may not have been wearing the accelerometer.  
+Reviewing the above table, there are a few noticeable trends/irregularities. First, Mondays appear to have some of the highest activity counts each week, particularly in Week 1 and 3. Additionally, the activity count for Saturday during Week 4 and 5 is 1440, which is equivalent to the participant having an activity count of 1 for every minute of the day. This suggests that the participant may not have been wearing the accelerometer. Additional details are difficult to determine from the table; plotting the data may be more beneficial in recognizing trends. 
 
 
 #### Creating a plot to inspect activity over the course of the day of the week: 
@@ -194,7 +194,7 @@ accelero_plot <-
 accelero_plot
 ```
 
-Looking at the above graph, there appears to be a few trends according to the day of the week. Most activity between minutes 500 and 750 occurred on Sundays, while activity peaks around 1000 minutes on Saturdays. Additionally, most activity around minute 1250 occurred on weekdays and on Saturday.
+Looking at the above graph, there appears to be a few trends according to the day of the week. Most activity between minutes 500 and 750 occurred on Sundays, while weekly activity appears to peak around 1000 minutes on Saturdays. Additionally, most activity around minute 1250 occurred on weekdays and Saturday.
 
 
 ## Problem 3
@@ -202,18 +202,13 @@ Looking at the above graph, there appears to be a few trends according to the da
 ```{r}
 library(p8105.datasets)
 data("ny_noaa")
+skimr::skim(ny_noaa)
 ```
 
 #### Summary of Dataset: 
-The `ny_noaa` dataset consists of `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns/variables. The data is in 'long' format, and variables to note include:
+The `ny_noaa` dataset consists of `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns/variables. The data is in 'long' format, and variables summarize the precipitation, snowfall, snow depth, maximum temperature, and minimum temperature on a specific date at a specific weather station. 
 
-* `id`: a character variable representing the weather station ID
-* `date`: date of observation in YYYY-MM-DD format
-* `prcp`: an integer variable representing precipitation (tenths of mm) (range: `r min(ny_noaa$prcp)`-`r max(ny_noaa$prcp)`)
-* `snow`: an integer variable representing snowfall (mm) (range: `r min(ny_noaa$snow)`-`r max(ny_noaa$snow)`)
-* `snwd`: an integer variable representing snow depth (mm) (range: `r min(ny_noaa$snwd)`-`r max(ny_noaa$snwd)`)
-* `tmax`: a character variable depicting maximum temperature in tenths of degrees C (range: `r min(ny_noaa$tmax)`-`r max(ny_noaa$tmax)`; mean: `r mean(ny_noaa$tmax, na.rm = TRUE)`)
-* `tmin`: a character variable depicting minimum temperature in tenths of degrees C (range: `r min(ny_noaa$tmin)`-`r max(ny_noaa$tmin)`; mean: `r mean(ny_noaa$tmin, na.rm = TRUE)`)
+Missing data appears to be a large issue within this dataset. As can be seen in the `skimr` table above, 5 out of 7 variables have missing data. The variables `tmax` and `tmin` both have the most missing data, with nearly half of their values missing. Precipitation, snowfall, and snow depth also have extensive amounts of missing data, where precipitation (`prcp`) has `r sum(is.na(ny_noaa$prcp))` missing values, snowfall (`snow`) has `r sum(is.na(ny_noaa$snow))` missing values, and snow depth (`snwd`) has `r sum(is.na(ny_noaa$snwd))` missing values. The significant amount of missing data, particularly for `tmax` and `tmin` could impact future analyses by producing invalid / inaccurate conclusions.
 
 #### Q3.1 Data Cleaning of `NY NOAA` Dataset:
 
@@ -232,7 +227,7 @@ ny_noaa_df <-
          tmin = as.numeric(tmin)/10)
 ```
 
-#### Q3.1 Data Cleaning: *What are the most commonly observed values for snowfall? Why?*
+#### *What are the most commonly observed values for snowfall? Why?*
 
 ```{r}
 ny_noaa_df %>% 
@@ -241,7 +236,7 @@ ny_noaa_df %>%
   arrange(desc(snow_obs))
 ```
 
-The most commonly observed values for snowfall are `0` and `NA`. These are the most commonly observed values for snowfall because snow can typically only be expected in winter months; therefore, there may not be snowfall to report in a majority of the months of the year. Stations may have decided to report 0mm of snowfall or NA for days where there was nothing to report. 
+The most commonly observed values for snowfall are `0` and `NA`. Snow can typically only be expected in winter months (December-February); therefore, there may not be snowfall to report in a majority of the months of the year, explaining the frequent report of 0mm. The missing values noticed in the snowfall variable are consistent with the explanation of missing values in the previous question. 
 
 
 #### Q3.2 Two-Panel Plot: *Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?*
@@ -250,15 +245,17 @@ The most commonly observed values for snowfall are `0` and `NA`. These are the m
 ny_noaa_df %>% 
   select(id, year, month, tmax) %>% 
   filter(month == 01 | month == 07) %>% 
+  group_by(year, month, id) %>% 
   mutate(month = recode(month,
                         `01` = "January",
                         `07` = "June")) %>% 
   ggplot(aes(x = year, 
-             y = tmax)) +
+             y = tmax,
+             na.rm = TRUE)) +
   geom_point(aes(color = tmax), 
              alpha = 0.5) +
   geom_smooth(aes(x = year, 
-                  y = tmax), 
+                  y = tmax),
               se = FALSE, 
               colour = "red") + 
   facet_grid(. ~ month) +
@@ -273,7 +270,7 @@ ny_noaa_df %>%
     name = "Temperature (C)")
 ```
 
-While June appears to have a consistent average `tmax` around 30 deg C each year between 1980 and 2010, the average `tmax` values in January (starting in 1990) appear to ebb and flow every 5 years. For example, average `tmax` in 1990 was around 3 deg C, while the average `tmax` in 1995 was around -3 deg C. This noticeable deviation from 0 deg C continues in the following years as well. Additionally, both maximum temperatures recorded in January and June depict a handful of outliers. Most notably, in January 2005, there was a recorded maximum value of 60 deg C. Similarly, in June 1990, there are two recorded maximum values around -16 or -17 deg C. 
+While June appears to have a consistent average `tmax` around 30 deg C each year between 1980 and 2010, the average `tmax` values in January (starting in 1990) appear to ebb and flow around 0 deg C every 5 years. For example, average `tmax` in 1990 was around 3 deg C, while the average `tmax` in 1995 was around -3 deg C. This noticeable deviation from 0 deg C continues in the following years as well. Additionally, both maximum temperatures recorded in January and June depict a handful of outliers. Most notably, in January 2005, there was a recorded maximum value of 60 deg C. Similarly, in June 1990, there are two recorded maximum values around -16 or -17 deg C. Although outliers are present, they are not a cause for concern. 
 
 #### Q3.3 Two-Panel Plot w/ `patchwork`: *Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.*
 
