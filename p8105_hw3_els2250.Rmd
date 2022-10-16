@@ -169,7 +169,8 @@ Reviewing the above table, there are a few noticeable trends/irregularities. Fir
 
 
 #### Creating a plot to inspect activity over the course of the day of the week: 
-Next, we'll create a plot to demonstrate
+
+Finally, we'll create a plot to visualize the activity over the course of each day of the week during the five weeks of data collection.  
 
 ```{r}
 accelero_plot <- 
@@ -190,9 +191,7 @@ accelero_plot <-
     name = "Day of the Week",
     discrete = TRUE)
 
-print(accelero_plot)
-
-ggsave("results/accelerometer_counts_per_minute.pdf", accelero_plot, width = 8, height = 5)
+accelero_plot
 ```
 
 Looking at the above graph, there appears to be a few trends according to the day of the week. Most activity between minutes 500 and 750 occurred on Sundays, while activity peaks around 1000 minutes on Saturdays. Additionally, most activity around minute 1250 occurred on weekdays and on Saturday.
@@ -205,15 +204,16 @@ library(p8105.datasets)
 data("ny_noaa")
 ```
 
-#### Summary of Dataset:
+#### Summary of Dataset: 
+The `ny_noaa` dataset consists of `r nrow(ny_noaa)` rows and `r ncol(ny_noaa)` columns/variables. The data is in 'long' format, and variables to note include:
 
-`id`: Weather station ID
-`date`: Date of observation
-`prcp`: Precipitation (tenths of mm)
-`snow`: Snowfall (mm)
-`snwd`: Snow depth (mm)
-`tmax`: Maximum temperature (tenths of degrees C)
-`tmin`: Minimum temperature (tenths of degrees C)
+* `id`: a character variable representing the weather station ID
+* `date`: date of observation in YYYY-MM-DD format
+* `prcp`: an integer variable representing precipitation (tenths of mm) (range: `r min(ny_noaa$prcp)`-`r max(ny_noaa$prcp)`)
+* `snow`: an integer variable representing snowfall (mm) (range: `r min(ny_noaa$snow)`-`r max(ny_noaa$snow)`)
+* `snwd`: an integer variable representing snow depth (mm) (range: `r min(ny_noaa$snwd)`-`r max(ny_noaa$snwd)`)
+* `tmax`: a character variable depicting maximum temperature in tenths of degrees C (range: `r min(ny_noaa$tmax)`-`r max(ny_noaa$tmax)`; mean: `r mean(ny_noaa$tmax, na.rm = TRUE)`)
+* `tmin`: a character variable depicting minimum temperature in tenths of degrees C (range: `r min(ny_noaa$tmin)`-`r max(ny_noaa$tmin)`; mean: `r mean(ny_noaa$tmin, na.rm = TRUE)`)
 
 #### Q3.1 Data Cleaning of `NY NOAA` Dataset:
 
