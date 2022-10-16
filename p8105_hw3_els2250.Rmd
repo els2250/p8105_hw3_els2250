@@ -59,7 +59,8 @@ instacart %>%
   count(aisle) %>% 
   filter(n > 10000) %>% 
   mutate(aisle = fct_reorder(aisle, n, .desc = TRUE)) %>% 
-  ggplot(aes(x = aisle, y = n)) +
+  ggplot(aes(x = aisle, 
+             y = n)) +
   geom_point() +
   labs(
     y = "Number of Items Ordered",
@@ -67,7 +68,8 @@ instacart %>%
     title = "Scatterplot of the Number of Items Ordered in Each Aisle"
   ) +
   theme_minimal() +
-  theme(plot.title = element_text(hjust = 0.5),
+  theme(
+    plot.title = element_text(hjust = 0.5),
     axis.text.x = element_text(angle = 60, hjust = 1))
 ```
 
@@ -120,7 +122,8 @@ accelero_df <-
 Next, we will tidy the dataset and create a weekday vs. weekend  variable.  
 
 ```{r}
-accelero_df <- accelero_df %>% 
+accelero_df <- 
+  accelero_df %>% 
   mutate(weeekend_v_weekday = ifelse(day == "Saturday" | day == "Sunday", "weekend", "weekday")) %>% 
   pivot_longer(
     cols = activity_1:activity_1440,
@@ -169,8 +172,11 @@ Reviewing the above table, there are a few noticeable trends/irregularities. Fir
 Next, we'll create a plot to demonstrate
 
 ```{r}
-accelero_plot <- accelero_df %>% 
-  ggplot(., aes(x = minute, y = activity_counts, color = day)) + 
+accelero_plot <- 
+  accelero_df %>% 
+  ggplot(., aes(x = minute, 
+                y = activity_counts, 
+                color = day)) + 
   geom_point(alpha = 0.5) +
   theme_minimal() +
   labs(
@@ -178,18 +184,18 @@ accelero_plot <- accelero_df %>%
     x = "Minute of the Day",
     title = "Activity counts per minute in 24 hours over 5 weeks"
   ) + 
-  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(
+    plot.title = element_text(hjust = 0.5)) +
   viridis::scale_color_viridis(
     name = "Day of the Week",
-    discrete = TRUE
-  )
+    discrete = TRUE)
 
 print(accelero_plot)
 
 ggsave("results/accelerometer_counts_per_minute.pdf", accelero_plot, width = 8, height = 5)
 ```
 
-Looking at the above graph, there appears to be a few trends according to the week day. Most activity between minutes 500 and 750 occurred on Sundays, while activity peaks around 1000 minutes on Saturdays. Additionally, most activity around minute 1250 occurred on weekdays and on Saturday.
+Looking at the above graph, there appears to be a few trends according to the day of the week. Most activity between minutes 500 and 750 occurred on Sundays, while activity peaks around 1000 minutes on Saturdays. Additionally, most activity around minute 1250 occurred on weekdays and on Saturday.
 
 
 ## Problem 3
@@ -197,7 +203,6 @@ Looking at the above graph, there appears to be a few trends according to the we
 ```{r}
 library(p8105.datasets)
 data("ny_noaa")
-
 ```
 
 #### Summary of Dataset:
@@ -210,12 +215,15 @@ data("ny_noaa")
 `tmax`: Maximum temperature (tenths of degrees C)
 `tmin`: Minimum temperature (tenths of degrees C)
 
-#### Post-Data Cleaning:
+#### Q3.1 Data Cleaning of `NY NOAA` Dataset:
 
 ```{r}
-ny_noaa_df <- ny_noaa %>% 
+ny_noaa_df <- 
+  ny_noaa %>% 
   janitor::clean_names() %>% 
-  separate(col = date, into = c('year', 'month', 'day'), sep = '-') %>% 
+  separate(col = date, 
+           into = c('year', 'month', 'day'), 
+           sep = '-') %>% 
   mutate(year = as.numeric(year),
          month = as.numeric(month),
          day = as.numeric(day),
@@ -224,7 +232,7 @@ ny_noaa_df <- ny_noaa %>%
          tmin = as.numeric(tmin)/10)
 ```
 
-#### *What are the most commonly observed values for snowfall? Why?*
+#### Q3.1 Data Cleaning: *What are the most commonly observed values for snowfall? Why?*
 
 ```{r}
 ny_noaa_df %>% 
@@ -233,10 +241,10 @@ ny_noaa_df %>%
   arrange(desc(snow_obs))
 ```
 
-The most commonly observed values for snowfall are `0` and `NA`. **NEED TO SAY WHY**
+The most commonly observed values for snowfall are `0` and `NA`. These are the most commonly observed values for snowfall because snow can typically only be expected in winter months; therefore, there may not be snowfall to report in a majority of the months of the year. Stations may have decided to report 0mm of snowfall or NA for days where there was nothing to report. 
 
 
-#### *Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?*
+#### Q3.2 Two-Panel Plot: *Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?*
 
 ```{r}
 ny_noaa_df %>% 
@@ -245,25 +253,75 @@ ny_noaa_df %>%
   mutate(month = recode(month,
                         `01` = "January",
                         `07` = "June")) %>% 
-  ggplot(aes(x = year, y = tmax)) +
-  geom_point(aes(color = tmax), alpha = 0.5) +
-  geom_smooth(aes(x = year, y = tmax), se = FALSE, colour = "red") + 
+  ggplot(aes(x = year, 
+             y = tmax)) +
+  geom_point(aes(color = tmax), 
+             alpha = 0.5) +
+  geom_smooth(aes(x = year, 
+                  y = tmax), 
+              se = FALSE, 
+              colour = "red") + 
   facet_grid(. ~ month) +
   labs(
     title = "Maximum Temperature in January vs. July, 1981-2010",
     x = "Year",
     y = "Maximum Temperature (C)"
   ) + 
-  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(
+    plot.title = element_text(hjust = 0.5)) +
   viridis::scale_color_viridis(
-    name = "Temperature (C)"
-  )
+    name = "Temperature (C)")
 ```
 
 While June appears to have a consistent average `tmax` around 30 deg C each year between 1980 and 2010, the average `tmax` values in January (starting in 1990) appear to ebb and flow every 5 years. For example, average `tmax` in 1990 was around 3 deg C, while the average `tmax` in 1995 was around -3 deg C. This noticeable deviation from 0 deg C continues in the following years as well. Additionally, both maximum temperatures recorded in January and June depict a handful of outliers. Most notably, in January 2005, there was a recorded maximum value of 60 deg C. Similarly, in June 1990, there are two recorded maximum values around -16 or -17 deg C. 
 
-#### *Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.*
+#### Q3.3 Two-Panel Plot w/ `patchwork`: *Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.*
 
+```{r}
+tmax_v_tmin <- 
+  ny_noaa_df %>% 
+  select(tmax, tmin) %>% 
+  pivot_longer(tmax:tmin,
+               names_to = "temp_name",
+               values_to = "temp_value") %>% 
+  mutate(temp_name = recode(temp_name,
+                            tmax = "Maximum Temp",
+                            tmin = "Minimum Temp")) %>% 
+  ggplot(aes(x = temp_value, 
+             fill = temp_name, 
+             na.rm = TRUE)) +
+  geom_density(alpha = 0.5) +
+    labs(
+    title = "Maximum vs. Minimum Temperature",
+    x = "Temperature (C)",
+    y = "Density"
+  ) + 
+  theme_minimal() +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    legend.title = element_blank(),
+    legend.position = "bottom")
 
+snowfall_distribution <- 
+  ny_noaa_df %>% 
+  filter(snow > 0 & snow < 100) %>% 
+  group_by(year) %>% 
+  ggplot(aes(x = snow, 
+             y = year, 
+             group = year,
+             fill = ..x..)) + 
+  geom_density_ridges_gradient(scale = 3, rel_min_height = 0.01) +
+  viridis::scale_fill_viridis() +
+  labs(
+    title = "Distribution of Snowfall, 1980-2010",
+    x = "Snowfall (mm)",
+    y = "Year"
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "none")
+
+tmax_v_tmin + snowfall_distribution
+```
 
 
